@@ -7,8 +7,9 @@
     "start": "npx serve .",
     "build": "echo \"Static H5 project - no build step yet\""
   },
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
   "keywords": [
     "excel",
     "ai",
@@ -16,4 +17,3 @@
     "web"
   ]
 }
-
