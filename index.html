@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>智能 Excel 操作工具</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./src/styles/excel.css" />
+    <link rel="stylesheet" href="./src/styles/context-menu.css" />
+  </head>
+  <body>
+    <div id="app-root" class="app-root">
+      <!-- 工具栏 -->
+      <header class="app-toolbar">
+        <div class="toolbar-left">
+          <span class="app-title">智能 Excel 操作工具</span>
+
+          <button class="btn" id="btn-clear-selection">清除选择</button>
+        </div>
+        <div class="toolbar-center">
+          <div class="prompt-input-wrapper">
+            <div id="prompt-input" class="prompt-input" contenteditable="true" placeholder="对选中单元格进行说明，例如：将这些数据按姓名合并到“统计”工作表..."></div>
+            <div id="prompt-dropdown" class="prompt-dropdown prompt-dropdown--hidden"></div>
+          </div>
+          <button class="btn btn-accent" id="btn-run-ai">AI 执行</button>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn" id="btn-import-excel">导入 Excel</button>
+          <button class="btn" id="btn-export-excel">导出 Excel</button>
+
+          <button class="btn" id="btn-open-config">配置</button>
+        </div>
+      </header>
+
+      <!-- 工作簿标签 -->
+      <div id="workbook-tabs" class="workbook-tabs">
+        <!-- 顶部：多工作簿标签 -->
+      </div>
+
+      <!-- 主区域：左侧网格 + 右侧配置（可折叠） -->
+      <main class="app-main">
+        <aside id="column-panel" class="column-panel column-panel--hidden">
+          <!-- 左侧列头面板 -->
+        </aside>
+        <div id="sheet-grid" class="sheet-grid">
+          <!-- 动态渲染 Excel 风格网格 -->
+        </div>
+
+        <aside id="config-panel" class="config-panel config-panel--hidden">
+          <!-- 右侧配置面板 -->
+        </aside>
+      </main>
+
+      <!-- AI执行流程框 -->
+      <div id="ai-process-panel" class="ai-process-panel ai-process-panel--hidden">
+        <div class="ai-process-header">
+          <span class="ai-process-title">AI 执行流程</span>
+          <button class="ai-process-close" id="btn-close-ai-process">✕</button>
+        </div>
+        <div class="ai-process-content" id="ai-process-content">
+          <!-- AI思考和操作过程将在这里显示 -->
+        </div>
+      </div>
+
+      <!-- 工作表标签 -->
+      <div id="sheet-tabs" class="sheet-tabs">
+        <!-- 底部：当前工作簿的 sheet 标签 -->
+      </div>
+
+      <!-- 状态栏 -->
+      <div class="status-bar">
+        <span id="status-selection">未选择单元格</span>
+        <span id="status-ai" class="status-ai">AI 空闲</span>
+      </div>
+    </div>
+
+    <input
+      id="input-import-excel"
+      type="file"
+      accept=".xlsx"
+      style="display: none"
+    />
+
+    <div id="merge-modal" class="modal-wrapper modal-wrapper--hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">合并工作表</h3>
+          <button id="btn-close-merge-modal" class="modal-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <p>请选择要合并的工作表和作为合并依据的列。</p>
+          <div id="merge-sheets-container"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-cancel-merge" class="btn">取消</button>
+          <button id="btn-confirm-merge" class="btn btn-primary">合并</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script type="module" src="./src/js/app.js"></script>
+  </body>
+</html>

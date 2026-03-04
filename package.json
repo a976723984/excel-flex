@@ -1,0 +1,19 @@
+{
+  "name": "smart-excel-ai-h5",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A web-based (H5) smart Excel-like tool with AI-powered cell operations and configurable LLM API.",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo \"Static H5 project - no build step yet\""
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": [
+    "excel",
+    "ai",
+    "h5",
+    "web"
+  ]
+}
+

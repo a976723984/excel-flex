@@ -1,0 +1,6 @@
+{
+  "apiUrl": "https://api.your-llm.com/v1/chat/completions",
+  "apiKey": "YOUR_API_KEY_HERE",
+  "model": "your-model-name"
+}
+

@@ -1,0 +1,723 @@
+/* 基础布局，仿 Excel 风格 */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #f3f6fb;
+  color: #222;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+}
+
+.app-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: linear-gradient(to bottom, #f8fafc, #e5edf8);
+  border-bottom: 1px solid #c3d3ef;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.toolbar-left,
+.toolbar-center,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-center {
+  flex: 1;
+}
+
+.app-title {
+  font-weight: 600;
+  color: #1f2933;
+  margin-right: 8px;
+}
+
+.btn {
+  padding: 4px 10px;
+  border-radius: 3px;
+  border: 1px solid #c3d3ef;
+  background: #f9fbff;
+  font-size: 12px;
+  cursor: pointer;
+  color: #1f2933;
+  transition: background 0.15s ease, box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btn:hover {
+  background: #edf3ff;
+  border-color: #99b2e5;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+  border-color: #1d4ed8;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-accent {
+  background: #10b981;
+  color: #fff;
+  border-color: #059669;
+}
+
+.btn-accent:hover {
+  background: #059669;
+}
+
+.prompt-input-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.prompt-input {
+  width: 100%;
+  min-height: 30px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  border: 1px solid #c3d3ef;
+  font-size: 12px;
+  outline: none;
+  background: #fff;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.prompt-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+}
+
+.prompt-input:empty:before {
+  content: attr(placeholder);
+  color: #9ca3af;
+}
+
+.prompt-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #d1d9e6;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 50;
+  margin-top: 4px;
+}
+
+.prompt-dropdown--hidden {
+  display: none;
+}
+
+.prompt-dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.prompt-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.prompt-dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+.prompt-dropdown-item.selected {
+  background: #dbeafe;
+}
+
+.prompt-dropdown-item--sheet {
+  font-weight: 600;
+  color: #1f2937;
+  background: #f9fafb;
+}
+
+.prompt-dropdown-item--column {
+  padding-left: 24px;
+}
+
+.reference-tag {
+  display: inline-flex;
+  align-items: center;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  margin: 0 2px;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.reference-tag:hover {
+  background: #bfdbfe;
+}
+
+.reference-tag-delete {
+  margin-left: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.reference-tag-delete:hover {
+  color: #ef4444;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sheet-grid {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  background: #fdfdff;
+  width: 100%;
+}
+
+.workbook-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-bottom: 1px solid #d1d9e6;
+  background: #eef2ff;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.workbook-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 4px 4px 0 0;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: transparent;
+  color: #111827;
+  flex-shrink: 0;
+}
+
+.workbook-tab--active {
+  background: #ffffff;
+  border-color: #c3d3ef;
+  border-bottom-color: #ffffff;
+  font-weight: 600;
+}
+
+.workbook-tab--add {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 600;
+  border-style: dashed;
+}
+
+.sheet-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-top: 1px solid #d1d9e6;
+  background: #f9fafb;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sheet-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px;
+  font-size: 12px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: transparent;
+  color: #374151;
+  flex-shrink: 0;
+  line-height: 1.6;
+}
+
+.sheet-tab--active {
+  background: #e5edf8;
+  border-color: #c3d3ef;
+  font-weight: 500;
+  box-shadow: 0 1px 0 #ffffff inset;
+}
+
+.sheet-tab--add {
+  min-width: 26px;
+  text-align: center;
+  font-weight: 600;
+  border-style: dashed;
+}
+
+.tab-delete-btn {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 50%;
+  color: #6c757d;
+  cursor: pointer;
+  opacity: 1; /* 始终可见 */
+  transition: all 0.2s ease;
+}
+
+.tab-delete-btn:hover {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+.sheet-grid {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  background: #fdfdff;
+  width: 100%;
+}
+
+.grid-table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 12px;
+}
+
+.grid-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+}
+
+.grid-table th,
+.grid-table td {
+  border: 1px solid #dde3f0;
+  padding: 0;
+  height: 22px;
+  line-height: 22px;
+}
+
+.grid-header {
+  background: #f3f6fb;
+  text-align: center;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.cell {
+  padding: 0 4px;
+  background: #ffffff;
+  cursor: default;
+  user-select: none;
+}
+
+.cell--selected {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+  background: #e5f0ff;
+}
+
+.cell--in-range {
+  background: #edf5ff;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 8px;
+  border-top: 1px solid #d1d9e6;
+  background: #f8fafc;
+  font-size: 11px;
+  color: #4b5563;
+  flex-shrink: 0;
+}
+
+.grid-header {
+  background: #f3f6fb;
+  text-align: center;
+  color: #4b5563;
+  font-weight: 500;
+  position: relative;
+}
+
+.col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  width: 4px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 5;
+}
+
+.row-resize-handle {
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 4px;
+  cursor: row-resize;
+  z-index: 5;
+}
+
+.status-ai {
+  color: #059669;
+}
+
+.status-ai--busy {
+  color: #f97316;
+}
+
+.column-panel {
+  width: 280px;
+  border-right: 1px solid #d1d9e6;
+  background: #f9fbff;
+  display: flex; /* 使用 Flexbox 布局 */
+  flex-direction: column;
+  gap: 8px;
+  position: fixed;
+  top: 48px; /* 假设工具栏高度为 48px */
+  left: 0;
+  bottom: 22px; /* 假设状态栏高度为 22px */
+  box-shadow: 2px 0 8px rgba(15, 23, 42, 0.12);
+  transition: transform 0.2s ease;
+  z-index: 30;
+  padding: 10px; /* 保持内边距 */
+}
+
+.column-panel-scroll-content {
+  flex: 1; /* 占据所有剩余空间 */
+  overflow-y: auto; /* 内容溢出时显示滚动条 */
+  min-height: 0; /* Flexbox 布局中的重要技巧，确保子元素可以正确收缩 */
+}
+
+.column-panel--hidden {
+  transform: translateX(-100%);
+}
+
+.column-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1f2937;
+}
+
+.column-workbook-group {
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.column-workbook-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f2937;
+  padding: 6px 8px;
+  background: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.column-sheet-group {
+  padding: 4px 0;
+}
+
+.column-sheet-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+  margin: 4px 8px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background: #e5e7eb;
+}
+
+.column-item {
+  font-size: 11px;
+  color: #6b7280;
+  padding: 4px 8px 4px 24px;
+  margin: 2px 0;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.column-item:hover {
+  background: #e5edf8;
+  color: #1f2937;
+}
+
+.column-item-tag {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  margin-right: 4px;
+}
+
+.config-panel {
+  width: 260px;
+  border-left: 1px solid #d1d9e6;
+  background: #f9fbff;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: fixed;
+  top: 48px;
+  right: 0;
+  bottom: 0;
+  box-shadow: -2px 0 8px rgba(15, 23, 42, 0.12);
+  transition: transform 0.2s ease;
+  z-index: 30;
+}
+
+.config-panel--hidden {
+  transform: translateX(100%);
+}
+
+.config-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.config-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.config-label {
+  font-size: 11px;
+  color: #4b5563;
+}
+
+.config-input {
+  padding: 4px 6px;
+  font-size: 12px;
+  border-radius: 3px;
+  border: 1px solid #c3d3ef;
+  outline: none;
+  background: #fff;
+}
+
+.config-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15);
+}
+
+.config-help {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.ai-process-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 400px;
+  background: white;
+  border: 1px solid #c3d3ef;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+.ai-process-panel--hidden {
+  display: none;
+}
+
+.ai-process-header {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-process-title {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.ai-process-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.ai-process-content {
+  padding: 16px;
+  height: calc(100% - 48px);
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Modal styles */
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-wrapper--hidden {
+  display: none;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 600px;
+  max-width: 90%;
+}
+
+.modal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.modal-body {
+  padding: 16px;
+  max-height: 60vh;
+  overflow-y: auto; /* 确保内容超出时显示滚动条 */
+}
+
+.column-workbook-header,
+.column-sheet-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.toggle-icon {
+  width: 16px;
+  text-align: center;
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.panel-placeholder {
+  font-size: 11px;
+  color: #9ca3af;
+  padding: 8px;
+}
+
+.panel-placeholder.small {
+  padding: 4px 6px 4px 24px;
+}
+
+.modal-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+#merge-sheets-container .sheet-group {
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 12px;
+}
+
+#merge-sheets-container .sheet-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.highlight-new-column {
+  background-color: #FFFF00 !important; /* 明黄色 */
+}
