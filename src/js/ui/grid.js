@@ -226,11 +226,12 @@ function createSheetTabs(tabsEl, containerEl, state) {
 // 防止滚动事件触发过于频繁
 let isScrolling = false;
 
-function renderGrid(containerEl, state) {
-  containerEl.innerHTML = "";
-
+function renderGrid(containerEl, state, isScrolling = false) {
   const activeSheet = getActiveSheet(state);
-  if (!activeSheet) return;
+  if (!activeSheet) {
+    containerEl.innerHTML = "";
+    return;
+  }
 
   // 确保 activeSheet.headers 是一个数组
   if (!Array.isArray(activeSheet.headers)) {
@@ -240,35 +241,66 @@ function renderGrid(containerEl, state) {
   const mergeInfo = buildMergeMaps(activeSheet.merges || []);
 
   // 计算总宽度和高度
-  console.log(`[grid.js] 开始渲染工作表: '${activeSheet.name}', 列数: ${activeSheet.cols}`);
   const totalWidth = HEADER_WIDTH + (activeSheet.cols * COL_WIDTH);
-  console.log(`[grid.js] 计算出的总宽度: ${totalWidth}px`);
   const totalHeight = activeSheet.rows * ROW_HEIGHT;
-
-  // 创建容器
-  const tableContainer = document.createElement("div");
-  tableContainer.style.width = `${totalWidth}px`;
-  tableContainer.style.height = `${totalHeight}px`;
-  tableContainer.style.position = "relative";
 
   // 获取滚动位置，计算可见区域
   const wrapper = containerEl.closest(".sheet-grid");
   const scrollLeft = wrapper ? wrapper.scrollLeft : 0;
   const scrollTop = wrapper ? wrapper.scrollTop : 0;
-  
+
   // 计算可见区域的起始和结束索引
   const startCol = Math.max(0, Math.floor(scrollLeft / COL_WIDTH) - 1);
   const endCol = Math.min(activeSheet.cols, startCol + Math.ceil(wrapper?.clientWidth / COL_WIDTH) + 2);
   const startRow = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - 1);
   const endRow = Math.min(activeSheet.rows, startRow + Math.ceil(wrapper?.clientHeight / ROW_HEIGHT) + 2);
 
-  // 创建表格
-  const table = document.createElement("table");
-  table.className = "grid-table";
-  table.style.tableLayout = "fixed";
+  let table;
+  let thead;
+  let tbody;
+
+  if (isScrolling) {
+    // 滚动时，找到现有的table, thead, tbody并清空内容
+    table = containerEl.querySelector(".grid-table");
+    if (!table) {
+      // 如果table不存在，回退到完整渲染
+      renderGrid(containerEl, state, false);
+      return;
+    }
+    thead = table.querySelector("thead");
+    tbody = table.querySelector("tbody");
+    if (thead) thead.innerHTML = "";
+    if (tbody) tbody.innerHTML = "";
+    else {
+        tbody = document.createElement("tbody");
+        table.appendChild(tbody);
+    }
+
+  } else {
+    // 非滚动时（初次渲染），创建所有元素
+    containerEl.innerHTML = "";
+    const tableContainer = document.createElement("div");
+    tableContainer.style.width = `${totalWidth}px`;
+    tableContainer.style.height = `${totalHeight}px`;
+    tableContainer.style.position = "relative";
+    
+    table = document.createElement("table");
+    table.className = "grid-table";
+    table.style.tableLayout = "fixed";
+    table.style.position = "absolute";
+
+    thead = document.createElement("thead");
+    tbody = document.createElement("tbody");
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    tableContainer.appendChild(table);
+    containerEl.appendChild(tableContainer);
+  }
+
+  // --- 重新渲染表头和内容 ---
 
   // 创建表头
-  const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
 
   // 左上角空白
@@ -296,10 +328,6 @@ function renderGrid(containerEl, state) {
   }
 
   thead.appendChild(headerRow);
-  table.appendChild(thead);
-
-  // 创建表格体
-  const tbody = document.createElement("tbody");
 
   // 渲染行（根据滚动位置）
   for (let r = startRow; r < endRow; r++) {
@@ -370,30 +398,25 @@ function renderGrid(containerEl, state) {
     tbody.appendChild(tr);
   }
 
-  table.appendChild(tbody);
-  tableContainer.appendChild(table);
-  containerEl.appendChild(tableContainer);
-
   // 恢复选择样式
   const selection = getSelection(state);
   if (selection) {
     updateSelectionStyles(table, selection, state);
   }
 
+  if (table) {
+    table.style.top = `${startRow * ROW_HEIGHT}px`;
+  }
+
+  // 更新状态栏
+  updateStatusBar(startRow, endRow, startCol, endCol, activeSheet);
+
   // 滚动事件监听已经在初始化时添加，这里不需要重复添加
 }
 
 function onGridScroll(wrapperEl, containerEl, state) {
-  // 保存当前滚动位置
-  const scrollLeft = wrapperEl.scrollLeft;
-  const scrollTop = wrapperEl.scrollTop;
-  
   // 滚动时重新渲染可见区域
-  renderGrid(containerEl, state);
-  
-  // 恢复滚动位置
-  wrapperEl.scrollLeft = scrollLeft;
-  wrapperEl.scrollTop = scrollTop;
+  renderGrid(containerEl, state, true);
 }
 
 function addColResizeHandle(th, colIndex, table) {
@@ -790,4 +813,28 @@ function showContextMenu(event, type, index, state) {
         }
     };
     document.addEventListener("click", clickOutsideHandler);
+}
+
+function updateStatusBar(startRow, endRow, startCol, endCol, activeSheet) {
+  let statusBar = document.getElementById("status-bar");
+  if (!statusBar) {
+    statusBar = document.createElement("div");
+    statusBar.id = "status-bar";
+    statusBar.className = "status-bar";
+    const sheetContainer = document.querySelector(".sheet-container");
+    if (sheetContainer) {
+        sheetContainer.appendChild(statusBar);
+    }
+  }
+
+  const visibleRows = `当前显示: ${startRow + 1} - ${endRow} 行`;
+  const totalRows = `总计: ${activeSheet.rows} 行`;
+  const visibleCols = `${columnLabel(startCol)} - ${columnLabel(endCol - 1)} 列`;
+
+  statusBar.innerHTML = `
+    <div class="status-bar-item">${totalRows}</div>
+    <div class="status-bar-item">${visibleRows}</div>
+    <div class="status-bar-item">${visibleCols}</div>
+    <div id="status-selection" class="status-bar-item status-bar-item--selection">未选择单元格</div>
+  `;
 }

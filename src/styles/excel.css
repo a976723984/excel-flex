@@ -721,3 +721,31 @@ body {
 .highlight-new-column {
   background-color: #FFFF00 !important; /* 明黄色 */
 }
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-top: 1px solid #d1d9e6;
+  background: #f8fafc;
+  font-size: 11px;
+  color: #4b5563;
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+.status-bar-item {
+  padding: 2px 6px;
+  border-right: 1px solid #d1d9e6;
+}
+
+.status-bar-item:last-child {
+  border-right: none;
+  flex: 1;
+  text-align: right;
+}
+
+.status-bar-item--selection {
+  font-weight: 500;
+  color: #1f2937;
+}
